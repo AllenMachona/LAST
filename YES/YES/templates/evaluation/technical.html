@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Technical Evaluation{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-clipboard-data"></i> Technical Evaluation</h2>
+<p class="text-muted">{{ procurement.tender_number }} - {{ procurement.title }}</p>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white fw-bold"><i class="bi bi-plus-circle"></i> Submit Score</div>
+    <div class="card-body p-4">
+        <form method="POST" action="{{ url_for('evaluation.score_technical', procurement_id=procurement.id) }}">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Bidder / Submission</label>
+                    <select name="submission_id" class="form-select" required>
+                        <option value="">Select...</option>
+                        {% for s in submissions %}
+                        <option value="{{ s.id }}">{{ s.bidder.company_name }} ({{ s.receipt_number }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Criteria Name</label>
+                    <input type="text" name="criteria_name" class="form-control" placeholder="e.g., Experience, Methodology" required>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label class="form-label fw-bold">Score</label>
+                    <input type="number" step="0.01" name="score" class="form-control" required>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label class="form-label fw-bold">Mandatory?</label>
+                    <select name="is_mandatory" class="form-select">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Comments / Evidence</label>
+                <textarea name="comments" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Passed?</label>
+                <select name="passed" class="form-select">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Record Score</button>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white fw-bold"><i class="bi bi-list-check"></i> Evaluation Records</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-light">
+                    <tr><th>Submission</th><th>Criteria</th><th>Score</th><th>Passed</th><th>Evaluator</th><th>Date</th></tr>
+                </thead>
+                <tbody>
+                    {% for e in evaluations %}
+                    <tr>
+                        <td>{{ e.submission.receipt_number if e.submission else '-' }}</td>
+                        <td>{{ e.criteria_name }}</td>
+                        <td>{{ e.score }}</td>
+                        <td>{% if e.passed %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-danger">No</span>{% endif %}</td>
+                        <td>{{ e.evaluator.get_full_name() if e.evaluator else '-' }}</td>
+                        <td>{{ e.created_at | botswana_time }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" class="text-center text-muted">No evaluations recorded yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

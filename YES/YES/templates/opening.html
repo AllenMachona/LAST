@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Bid Opening{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-unlock"></i> Bid Opening Panel</h2>
+<div class="alert alert-warning d-flex align-items-center">
+    <i class="bi bi-shield-lock fs-3 me-3"></i>
+    <div><strong>Multi-person control required.</strong> No single user can decrypt bids alone. All opening panel members must be present.</div>
+</div>
+<div class="card shadow-sm">
+    <div class="card-header bg-white fw-bold"><i class="bi bi-door-open"></i> Opening Session</div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6"><p><strong>Procurement:</strong> {{ procurement.tender_number if procurement else 'N/A' }}</p></div>
+            <div class="col-md-6"><p><strong>Opening Type:</strong> Public / Virtual / Live Streamed</p></div>
+            <div class="col-md-6"><p><strong>Envelope:</strong> Technical / Financial / Single</p></div>
+            <div class="col-md-6"><p><strong>Form:</strong> Form G - Bid Opening Record</p></div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr><th>#</th><th>Bidder</th><th>Receipt No</th><th>Status</th><th>Opened At</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="6" class="text-center text-muted">No bids opened yet. Start a session to decrypt and record.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="btn-group mt-3">
+            <button class="btn btn-success"><i class="bi bi-play-circle"></i> Start Opening Session</button>
+            <button class="btn btn-outline-primary"><i class="bi bi-file-earmark-text"></i> Generate Form G/H/I</button>
+            <button class="btn btn-outline-secondary"><i class="bi bi-camera-video"></i> Record Session</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

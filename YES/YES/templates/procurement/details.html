@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}{{ procurement.tender_number }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">{{ procurement.title }}</h2>
+        <small class="text-muted">{{ procurement.tender_number }}</small>
+    </div>
+    <span class="badge bg-{% if procurement.status == 'published' %}success{% elif procurement.status == 'draft' %}secondary{% else %}primary{% endif %} fs-6">
+        {{ procurement.status.replace('_', ' ').title() }}
+    </span>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-white fw-bold"><i class="bi bi-info-circle"></i> Procurement Details</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6"><p><strong>Category:</strong> {{ procurement.category.title() }}</p></div>
+                    <div class="col-md-6"><p><strong>Method:</strong> {{ procurement.procurement_method }}</p></div>
+                    <div class="col-md-6"><p><strong>Submission:</strong> {{ procurement.submission_method.replace('_', ' ').title() }}</p></div>
+                    <div class="col-md-6"><p><strong>Estimated Value:</strong> {{ procurement.estimated_value or 'N/A' }} {{ procurement.currency }}</p></div>
+                    <div class="col-md-6"><p><strong>Closing Date:</strong> {{ procurement.closing_date | botswana_time }}</p></div>
+                    <div class="col-md-6"><p><strong>PPRA Code:</strong> {{ procurement.ppra_code or 'N/A' }}</p></div>
+                    <div class="col-md-6"><p><strong>Funding Source:</strong> {{ procurement.funding_source or 'N/A' }}</p></div>
+                    <div class="col-md-6"><p><strong>Created:</strong> {{ procurement.created_at | botswana_time }}</p></div>
+                </div>
+                <hr>
+                <p><strong>Description:</strong></p>
+                <p>{{ procurement.description or 'No description provided.' }}</p>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-white fw-bold"><i class="bi bi-files"></i> Documents</div>
+            <div class="card-body">
+                <p class="text-muted">Documents will appear here once uploaded.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-white fw-bold"><i class="bi bi-gear"></i> Actions</div>
+            <div class="list-group list-group-flush">
+                {% if not current_user.has_role('Bidder') %}
+                <a href="{{ url_for('procurement.edit', id=procurement.id) }}" class="list-group-item list-group-item-action"><i class="bi bi-pencil"></i> Edit</a>
+                {% endif %}
+                <a href="{{ url_for('procurement.workspace', id=procurement.id) }}" class="list-group-item list-group-item-action"><i class="bi bi-grid-3x3-gap"></i> Workspace</a>
+
+                {% if not current_user.has_role('Bidder') %}
+                <a href="{{ url_for('committee.view', procurement_id=procurement.id) }}" class="list-group-item list-group-item-action"><i class="bi bi-people"></i> Evaluation Committee</a>
+                <a href="{{ url_for('evaluation.technical', procurement_id=procurement.id) }}" class="list-group-item list-group-item-action"><i class="bi bi-clipboard-check"></i> Technical Evaluation</a>
+                <a href="{{ url_for('evaluation.financial', procurement_id=procurement.id) }}" class="list-group-item list-group-item-action"><i class="bi bi-cash-stack"></i> Financial Evaluation</a>
+                <a href="{{ url_for('award.index', procurement_id=procurement.id) }}" class="list-group-item list-group-item-action"><i class="bi bi-trophy"></i> Award Management</a>
+                {% endif %}
+
+                <a href="{{ url_for('clarification.index', procurement_id=procurement.id) }}" class="list-group-item list-group-item-action"><i class="bi bi-chat-dots"></i> Clarifications</a>
+                <a href="{{ url_for('complaints.index', procurement_id=procurement.id) }}" class="list-group-item list-group-item-action"><i class="bi bi-exclamation-triangle"></i> Complaints</a>
+
+                {% if current_user.role and current_user.role.name in ['Internal Audit', 'PPRA', 'Public Oversight', 'External Auditor', 'System Administrator'] %}
+                <a href="{{ url_for('audit.procurement_audit', procurement_id=procurement.id) }}" class="list-group-item list-group-item-action"><i class="bi bi-journal-text"></i> Audit Trail</a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if not current_user.has_role('Bidder') %}
+        <!-- WORKFLOW ACTIONS -->
+        {% if procurement.status == 'draft' %}
+        <div class="card shadow-sm mb-3 border-primary">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-arrow-right-circle"></i> Draft</h6>
+                <p class="small text-muted">Send to internal review before publication.</p>
+                <form method="POST" action="{{ url_for('procurement.send_review', id=procurement.id) }}">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-send"></i> Send to Internal Review</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if procurement.status == 'internal_review' %}
+        <div class="card shadow-sm mb-3 border-warning">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-eye"></i> Under Review</h6>
+                <p class="small text-muted">Approve this procurement for publication.</p>
+                <form method="POST" action="{{ url_for('procurement.approve_publication', id=procurement.id) }}">
+                    <button type="submit" class="btn btn-warning w-100"><i class="bi bi-check-circle"></i> Approve for Publication</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if procurement.status == 'approved_for_publication' %}
+        <div class="card shadow-sm mb-3 border-success">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-globe"></i> Ready to Publish</h6>
+                <p class="small text-muted">Once published, the tender will be visible to bidders.</p>
+                <form method="POST" action="{{ url_for('procurement.publish', id=procurement.id) }}">
+                    <button type="submit" class="btn btn-success w-100"><i class="bi bi-globe"></i> Publish Tender</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if procurement.status == 'published' %}
+        <div class="card shadow-sm mb-3 border-info">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-door-open"></i> Published</h6>
+                <p class="small text-muted">Open submissions to allow bidders to submit bids.</p>
+                <form method="POST" action="{{ url_for('procurement.open_submission', id=procurement.id) }}">
+                    <button type="submit" class="btn btn-info w-100 text-white"><i class="bi bi-upload"></i> Open for Submissions</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if procurement.status == 'submission_open' %}
+        <div class="card shadow-sm mb-3 border-danger">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-lock"></i> Submissions Open</h6>
+                <p class="small text-muted">Close submissions when the deadline is reached.</p>
+                <form method="POST" action="{{ url_for('procurement.close_submission', id=procurement.id) }}">
+                    <button type="submit" class="btn btn-danger w-100"><i class="bi bi-lock-fill"></i> Close Submissions</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <!-- BIDDER ACTIONS -->
+        {% if procurement.status in ['published', 'submission_open'] and current_user.has_role('Bidder') %}
+        <div class="card shadow-sm mb-3 border-primary">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-upload"></i> Bidder Actions</h6>
+                <p class="small text-muted">Submit your bid before the closing deadline.</p>
+                <a href="{{ url_for('bid.submit', procurement_id=procurement.id) }}" class="btn btn-primary w-100"><i class="bi bi-upload"></i> Submit Bid</a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if procurement.status == 'submission_open' and not current_user.has_role('Bidder') %}
+        <div class="card shadow-sm mb-3">
+            <div class="card-body text-center">
+                <span class="badge bg-success fs-6">Submissions are OPEN</span>
+                <p class="small text-muted mt-2">Bidders can submit until {{ procurement.closing_date | botswana_time }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Workspace{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-grid-3x3-gap"></i> Procurement Workspace</h2>
+<p class="text-muted">{{ procurement.tender_number }} - {{ procurement.title }}</p>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="list-group shadow-sm">
+            <a href="#" class="list-group-item list-group-item-action active workspace-section"><i class="bi bi-bank"></i> 01 Governance</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-file-text"></i> 02 Bidding Package</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-globe"></i> 03 Published Info</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-chat-left-text"></i> 04 Communications</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-lock-fill"></i> 05 Sealed Submissions</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-unlock"></i> 06 Bid Opening</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-check-square"></i> 07 Compliance Eval</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-clipboard-data"></i> 08 Technical Eval</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-cash-coin"></i> 09 Financial Eval</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-trophy"></i> 10 Award</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-exclamation-circle"></i> 11 Complaints</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-file-earmark-check"></i> 12 Contract Handover</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-archive"></i> 13 Audit & Archive</a>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-bold"><i class="bi bi-bank"></i> 01 Governance</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Procurement Plan</h6>
+                        <table class="table table-sm table-borderless">
+                            <tr><td>Plan Reference:</td><td class="text-muted">{{ procurement.tender_number }}</td></tr>
+                            <tr><td>Budget Confirmed:</td><td>{% if procurement.budget_confirmed %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-warning">Pending</span>{% endif %}</td></tr>
+                            <tr><td>Funding Source:</td><td class="text-muted">{{ procurement.funding_source or 'N/A' }}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Approvals & Delegations</h6>
+                        <table class="table table-sm table-borderless">
+                            <tr><td>Created By:</td><td class="text-muted">{{ procurement.created_by_user.get_full_name() if procurement.created_by_user else 'N/A' }}</td></tr>
+                            <tr><td>Approved By:</td><td class="text-muted">{{ procurement.approver.get_full_name() if procurement.approver else 'Pending' }}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <hr>
+                <h6>Committee Appointments</h6>
+                {% if procurement.committees %}
+                <ul class="list-group list-group-flush">
+                    {% for c in procurement.committees %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ c.evaluation_type.title() }} Committee</span>
+                        <span class="badge bg-info">{{ c.status }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">No committees appointed yet. <a href="{{ url_for('committee.assign', procurement_id=procurement.id) }}">Assign Committee</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

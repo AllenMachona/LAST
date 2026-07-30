@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-bar-chart"></i> Procurement Reports</h2>
+<div class="d-flex justify-content-between mb-3">
+    <p class="text-muted">Overview of all procurements in the system.</p>
+    <a href="{{ url_for('reports.export_csv') }}" class="btn btn-outline-primary"><i class="bi bi-download"></i> Export CSV</a>
+</div>
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Tender Number</th><th>Title</th><th>Status</th><th>Category</th><th>Value</th><th>Closing</th></tr>
+            </thead>
+            <tbody>
+                {% for p in procurements %}
+                <tr>
+                    <td><a href="{{ url_for('procurement.details', id=p.id) }}">{{ p.tender_number }}</a></td>
+                    <td>{{ p.title[:50] }}{% if p.title|length > 50 %}...{% endif %}</td>
+                    <td><span class="badge bg-{{ 'success' if p.status == 'published' else 'secondary' if p.status == 'draft' else 'primary' }}">{{ p.status.replace('_', ' ').title() }}</span></td>
+                    <td>{{ p.category.title() }}</td>
+                    <td>{{ p.estimated_value or 'N/A' }}</td>
+                    <td>{{ p.closing_date | botswana_time if p.closing_date else 'N/A' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted">No procurements found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

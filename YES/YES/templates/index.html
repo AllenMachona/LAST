@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="px-4 py-5 my-5 text-center">
+    <h1 class="display-4 fw-bold" style="color: #1a237e;">Electronic Bid Management System</h1>
+    <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">Aligned to the Botswana PPRA Framework. Secure, auditable, and procurement-native tender management from initiation to award.</p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg px-4 gap-3">Sign In</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary btn-lg px-4">Register as Bidder</a>
+        </div>
+        <div class="mt-5 row text-start">
+            <div class="col-md-4"><h5><i class="bi bi-lock-fill text-primary"></i> Secure</h5><p class="small">Encrypted bid submissions with multi-person decryption control.</p></div>
+            <div class="col-md-4"><h5><i class="bi bi-shield-check text-primary"></i> Compliant</h5><p class="small">Built for the Public Procurement Act, 2021 and PPRA Regulations, 2023.</p></div>
+            <div class="col-md-4"><h5><i class="bi bi-graph-up text-primary"></i> Transparent</h5><p class="small">Immutable audit trails and real-time procurement dashboards.</p></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

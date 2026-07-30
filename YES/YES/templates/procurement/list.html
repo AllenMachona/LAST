@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}All Tenders{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-list"></i> {% if current_user.has_role('Bidder') %}Available Tenders{% else %}All Procurements{% endif %}</h2>
+
+{% if not current_user.has_role('Bidder') %}
+<div class="mb-3">
+    <a href="{{ url_for('procurement.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Procurement</a>
+</div>
+{% endif %}
+
+<div class="row">
+    {% for t in tenders %}
+    <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5 class="card-title">{{ t.title[:40] }}{% if t.title|length > 40 %}...{% endif %}</h5>
+                    <span class="badge bg-{{ 'success' if t.status == 'published' or t.status == 'submission_open' else 'primary' if t.status != 'draft' else 'secondary' }}">{{ t.status.replace('_', ' ').title() }}</span>
+                </div>
+                <p class="text-muted small mb-1">{{ t.tender_number }}</p>
+                <p class="small mb-1"><strong>Category:</strong> {{ t.category.title() }}</p>
+                <p class="small mb-1"><strong>Method:</strong> {{ t.procurement_method }}</p>
+                <p class="small mb-1"><strong>Value:</strong> {{ t.estimated_value or 'N/A' }} {{ t.currency }}</p>
+                {% if t.closing_date %}
+                <p class="small mb-2"><strong>Closes:</strong> {{ t.closing_date | botswana_time }}</p>
+                {% endif %}
+                <a href="{{ url_for('procurement.details', id=t.id) }}" class="btn btn-sm btn-outline-primary w-100">
+                    {% if current_user.has_role('Bidder') %}View & Submit{% else %}View Details{% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">No tenders available.</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

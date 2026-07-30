@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Clarifications{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-chat-dots"></i> Clarifications & Addenda</h2>
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white fw-bold"><i class="bi bi-question-circle"></i> Ask a Question</div>
+    <div class="card-body p-4">
+        <form method="POST" action="{{ url_for('clarification.ask', procurement_id=procurement_id) }}">
+            <div class="mb-3">
+                <textarea name="question" class="form-control" rows="3" placeholder="Enter your question about this procurement..." required></textarea>
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="anonymous" id="anon">
+                <label class="form-check-label" for="anon">Submit anonymously (bidder identity hidden)</label>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Submit Question</button>
+        </form>
+    </div>
+</div>
+<div class="card shadow-sm">
+    <div class="card-header bg-white fw-bold"><i class="bi bi-journal-text"></i> Official Communication Log</div>
+    <div class="list-group list-group-flush">
+        {% for c in clarifications %}
+        <div class="list-group-item">
+            <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">Q: {{ c.question[:120] }}{% if c.question|length > 120 %}...{% endif %}</h6>
+                <small class="text-muted">{{ c.created_at | botswana_time }}</small>
+            </div>
+            {% if c.response %}
+            <p class="mb-1 text-success"><strong>A:</strong> {{ c.response }}</p>
+            {% else %}
+            <p class="mb-1 text-muted"><em>Awaiting official response...</em></p>
+            {% endif %}
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <small>Status: <span class="badge bg-{{ 'success' if c.status == 'published' else 'warning' }}">{{ c.status.replace('_', ' ').title() }}</span></small>
+                {% if not c.response %}
+                <form method="POST" action="{{ url_for('clarification.respond', id=c.id) }}" class="d-flex gap-2">
+                    <input type="text" name="response" class="form-control form-control-sm" placeholder="Type response..." required>
+                    <button type="submit" class="btn btn-sm btn-primary">Respond</button>
+                    <button type="submit" name="publish" value="1" class="btn btn-sm btn-success">Publish</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="list-group-item text-center text-muted py-4">No clarifications yet.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

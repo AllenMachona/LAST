@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Timeline{% endblock %}
+{% block content %}
+<h2>Procurement Timeline</h2>
+<p class="text-muted">{{ procurement.tender_number }}</p>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="timeline">
+            <div class="d-flex mb-3">
+                <div class="flex-shrink-0"><span class="badge bg-primary">Created</span></div>
+                <div class="flex-grow-1 ms-3">{{ procurement.created_at | botswana_time }}</div>
+            </div>
+            {% if procurement.publication_date %}
+            <div class="d-flex mb-3">
+                <div class="flex-shrink-0"><span class="badge bg-success">Published</span></div>
+                <div class="flex-grow-1 ms-3">{{ procurement.publication_date | botswana_time }}</div>
+            </div>
+            {% endif %}
+            {% if procurement.closing_date %}
+            <div class="d-flex mb-3">
+                <div class="flex-shrink-0"><span class="badge bg-warning">Closing</span></div>
+                <div class="flex-grow-1 ms-3">{{ procurement.closing_date | botswana_time }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

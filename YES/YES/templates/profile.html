@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<h2>My Profile</h2>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width:100px;height:100px;font-size:2rem;">
+                    {{ user.first_name[0] }}{{ user.last_name[0] }}
+                </div>
+                <h5 class="mt-3">{{ user.get_full_name() }}</h5>
+                <span class="badge bg-secondary">{{ user.role.name if user.role else 'No Role' }}</span>
+            </div>
+            <div class="col-md-8">
+                <table class="table table-borderless">
+                    <tr><td><strong>Username:</strong></td><td>{{ user.username }}</td></tr>
+                    <tr><td><strong>Email:</strong></td><td>{{ user.email }}</td></tr>
+                    <tr><td><strong>Department:</strong></td><td>{{ user.department or 'N/A' }}</td></tr>
+                    <tr><td><strong>Phone:</strong></td><td>{{ user.phone or 'N/A' }}</td></tr>
+                    <tr><td><strong>Last Login:</strong></td><td>{{ user.last_login | botswana_time }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

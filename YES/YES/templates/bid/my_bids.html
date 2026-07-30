@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}My Bids{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-files"></i> My Submissions</h2>
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Receipt No</th><th>Procurement</th><th>Type</th><th>Submitted</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                {% for s in submissions %}
+                <tr>
+                    <td><code>{{ s.receipt_number }}</code></td>
+                    <td>{{ s.procurement.title if s.procurement else 'N/A' }}</td>
+                    <td>{{ s.envelope_type.title() }}</td>
+                    <td>{{ s.submitted_at | botswana_time }}</td>
+                    <td><span class="badge bg-{{ 'success' if s.status == 'submitted' else 'secondary' }}">{{ s.status.title() }}</span></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-center text-muted">You have not submitted any bids yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

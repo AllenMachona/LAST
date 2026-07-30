@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Create Procurement{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-plus-circle"></i> Create New Procurement</h2>
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Title <span class="text-danger">*</span></label>
+                <input type="text" name="title" class="form-control" placeholder="Enter procurement title" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Description</label>
+                <textarea name="description" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Category <span class="text-danger">*</span></label>
+                    <select name="category" class="form-select" required>
+                        <option value="">Select...</option>
+                        <option value="supplies">Supplies</option>
+                        <option value="works">Works</option>
+                        <option value="services">Services</option>
+                        <option value="consultancy">Consultancy Services</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Method <span class="text-danger">*</span></label>
+                    <select name="procurement_method" class="form-select" required>
+                        <option value="">Select...</option>
+                        <option value="Open Domestic Bidding">Open Domestic Bidding</option>
+                        <option value="Open International Bidding">Open International Bidding</option>
+                        <option value="Restricted Domestic Bidding">Restricted Domestic Bidding</option>
+                        <option value="Request for Quotations">Request for Quotations</option>
+                        <option value="Direct Procurement">Direct Procurement</option>
+                        <option value="Request for Proposals">Request for Proposals</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Submission Method</label>
+                    <select name="submission_method" class="form-select">
+                        <option value="single_envelope">Single Envelope</option>
+                        <option value="dual_envelope">Dual Envelope</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Estimated Value (BWP)</label>
+                    <input type="number" step="0.01" name="estimated_value" class="form-control">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Closing Date <span class="text-danger">*</span></label>
+                    <input type="datetime-local" name="closing_date" class="form-control" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">PPRA Code</label>
+                    <select name="ppra_code" class="form-select">
+                        <option value="">Select...</option>
+                        {% for code in ppra_codes %}
+                        <option value="{{ code.code }}">{{ code.code }} - {{ code.description[:40] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Funding Source</label>
+                <input type="text" name="funding_source" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Create Procurement</button>
+            <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
